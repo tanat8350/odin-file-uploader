@@ -6,6 +6,7 @@ const logger = require('morgan');
 
 const session = require('express-session');
 const passport = require('passport');
+const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -17,8 +18,12 @@ app.use(
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
-    // store: later
     cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    store: new PrismaSessionStore(require('./prisma/prisma'), {
+      checkPeriod: 2 * 60 * 1000, //ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
   })
 );
 app.use(passport.session());
