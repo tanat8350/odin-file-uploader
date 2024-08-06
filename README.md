@@ -1,0 +1,3 @@
+- prisma postgres
+- passport local
+- pug

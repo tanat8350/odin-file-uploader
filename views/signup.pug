@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  h1 Sign up
+  form(method='post')
+    div
+      label(for='username') Username: &nbsp;
+      input(id='username' name='username' type='text' value=(undefined === username ? '' : username))
+    div
+      label(for='password') Password: &nbsp;
+      input(id='password' name='password' type='password')
+    div
+      label(for='passwordConfirmation') Confirm password: &nbsp;
+      input(id='passwordConfirmation' name='passwordConfirmation' type='password')
+    button(type='submit') Sign up
+  if errors
+    ul
+    for error in errors
+      li= error.msg
+
