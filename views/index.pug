@@ -3,6 +3,13 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
-  form(action='/upload' method='post')
-    input(type='file')
+  form(action='/upload' method='post' enctype='multipart/form-data')
+    input(type='file' name='upload')
     button(type='submit') Upload
+  if files
+    ul
+      for file in files
+        li #{file.originalName} [size #{file.size}] &nbsp;
+          a(href=`/download/${file.id}`) Download
+  else
+    p There is no file

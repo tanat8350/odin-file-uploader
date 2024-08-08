@@ -25,3 +25,10 @@ model Session {
   data      String
   expiresAt   DateTime
 }
+
+model File {
+  id String @id
+  originalName String
+  size Int
+  uploadTime DateTime @default(now())
+}
