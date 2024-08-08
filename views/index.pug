@@ -9,7 +9,7 @@ block content
   if files
     ul
       for file in files
-        li #{file.originalName} [size #{file.size}] &nbsp;
-          a(href=`/download/${file.id}`) Download
+        li
+          a(href=`/file/${file.id}`)= file.originalName
   else
     p There is no file

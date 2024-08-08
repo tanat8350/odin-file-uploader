@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1= title
+  p Filename: #{file.originalName}
+  p Size: #{file.size}
+  p Upload time: #{file.uploadTime}
+  form(action=`/file/download/${file.id}` method='post')
+    button(type='submit') Download
+  form(action=`/file/delete/${file.id}` method='post')
+    button(type='submit') Delete
