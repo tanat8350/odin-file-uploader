@@ -10,6 +10,7 @@ const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const authenticateRouter = require('./routes/authenticate');
 
 const app = express();
 
@@ -19,10 +20,8 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 24 },
-    store: new PrismaSessionStore(require('./prisma/prisma'), {
+    store: new PrismaSessionStore(require('./config/prisma'), {
       checkPeriod: 2 * 60 * 1000, //ms
-      dbRecordIdIsSessionId: true,
-      dbRecordIdFunction: undefined,
     }),
   })
 );
@@ -44,6 +43,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use('/', indexRouter);
+app.use('/', authenticateRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
