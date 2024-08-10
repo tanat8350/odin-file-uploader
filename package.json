@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "devstart": "nodemon ./bin/www",
-    "serverstart": "DEBUG=mdn-local-library:* npm run devstart",
+    "serverstart": "DEBUG=odin-file-uploader:* npm run devstart",
     "ss": "npm run serverstart"
   },
   "dependencies": {

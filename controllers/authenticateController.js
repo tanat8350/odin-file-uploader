@@ -40,7 +40,7 @@ module.exports = {
         return;
       }
 
-      const user = await prisma.user.create({
+      const created = await prisma.user.create({
         data: {
           username: req.body.username,
           password: await bcrypt.hash(req.body.password, 10),

@@ -3,13 +3,27 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
-  form(action='/upload' method='post' enctype='multipart/form-data')
-    input(type='file' name='upload')
-    button(type='submit') Upload
-  if files
+  p user :tu password :tp
+  if currentUser
+    form(action=`/file/folder/${folderid}` method='post')
+      label(for='name') New folder&nbsp;
+      input(type='text' name='name' id='name')
+      span &nbsp;
+      button(type='submit') Create
+    form(action=`/file/upload/${folderid}` method='post' enctype='multipart/form-data')
+      input(type='file' name='upload')
+      button(type='submit') Upload
     ul
-      for file in files
-        li
-          a(href=`/file/${file.id}`)= file.originalName
+      if folders
+        for folder in folders
+          li
+            a(href=`/file/folder/${folder.id}`)= folder.name + '/'
+      if files
+          for file in files
+            li
+              a(href=`/file/${file.id}`)= file.originalName
+              // to fix
+      if !folders && !files
+        p There is no folder or file
   else
-    p There is no file
+    p please login

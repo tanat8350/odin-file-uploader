@@ -3,7 +3,22 @@ const prisma = require('../config/prisma');
 
 module.exports = {
   index: asyncHandler(async (req, res) => {
-    const files = await prisma.file.findMany();
-    res.render('index', { title: 'Odin File uploader', files });
+    const title = 'Odin File uploader';
+
+    if (!res.locals.currentUser) {
+      res.render('index', { title });
+      return;
+    }
+
+    const [folders, files] = await Promise.all([
+      prisma.folder.findMany({
+        where: { userid: res.locals.currentUser.id, parentFolderId: null },
+      }),
+      prisma.file.findMany({
+        where: { userid: res.locals.currentUser.id, folderid: null },
+      }),
+    ]);
+    res.locals.folderid = '';
+    res.render('index', { title, folders, files });
   }),
 };
