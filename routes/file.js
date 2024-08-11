@@ -4,12 +4,14 @@ const router = express.Router();
 const fileController = require('../controllers/fileController');
 
 router.get('/:id', fileController.getFile);
-router.post('/upload/', fileController.postUpload);
-router.post('/upload/:id', fileController.postUpload);
-router.post('/folder/', fileController.postCreateFolderRoot);
-router.get('/folder/:id', fileController.getInFolder);
-router.post('/folder/:id', fileController.postCreateFolderRoot);
-router.post('/download/:id', fileController.postDownload);
-// router.post('/delete/:id', fileController.postDelete);
+router.post('/upload/', fileController.postUploadFile);
+router.post('/upload/:id', fileController.postUploadFile);
+router.post('/folder/', fileController.postCreateFolder);
+router.get('/folder/:id', fileController.getFolder);
+router.post('/folder/:id', fileController.postCreateFolder);
+router.post('/folder/:id/delete', fileController.postDeleteFolder);
+router.post('/folder/:id/rename', fileController.postRenameFolder);
+router.post('/download/:id', fileController.postDownloadFile);
+router.post('/delete/:id', fileController.postDeleteFile);
 
 module.exports = router;

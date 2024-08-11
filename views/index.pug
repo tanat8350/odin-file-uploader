@@ -1,6 +1,7 @@
 extends layout
 
 block content
+  // Folder view
   h1= title
   p Welcome to #{title}
   p user :tu password :tp
@@ -10,6 +11,14 @@ block content
       input(type='text' name='name' id='name')
       span &nbsp;
       button(type='submit') Create
+    if folderid
+      form(action=`/file/folder/${folderid}/rename` method='post')
+        label(for='rename') Rename&nbsp;
+        input(type='text' name='rename' id='rename')
+        span &nbsp;
+        button(type='submit') Rename
+      form(action=`/file/folder/${folderid}/delete` method='post')
+        button(type='submit') Delete
     form(action=`/file/upload/${folderid}` method='post' enctype='multipart/form-data')
       input(type='file' name='upload')
       button(type='submit') Upload
