@@ -5,6 +5,11 @@ const { body, validationResult } = require('express-validator');
 const upload = require('../config/upload');
 const prisma = require('../config/prisma');
 
+const validateFileName = [
+  body('name').trim().isLength({ min: 1 }).withMessage('Name is required'),
+  // later add file format
+];
+
 const validateFolderName = [
   body('name')
     .trim()
@@ -20,7 +25,7 @@ module.exports = {
       where: { id: req.params.id },
     });
     file.uploadTime = new Date(file.uploadTime).toLocaleString();
-    res.render('file', { title: file.originalName, file });
+    res.render('file', { title: file.name, file });
   }),
 
   postUploadFile: [
@@ -29,6 +34,7 @@ module.exports = {
       let redirect = '/';
       const file = {
         id: req.file.filename,
+        name: req.file.originalname,
         originalName: req.file.originalname,
         size: req.file.size,
         userid: res.locals.currentUser.id,
@@ -62,6 +68,22 @@ module.exports = {
     }
     res.redirect(redirect);
   }),
+
+  postUpdateFile: [
+    validateFileName,
+    asyncHandler(async (req, res, next) => {
+      const errors = validationResult(req);
+      // later add display error msg
+      if (!errors.isEmpty()) {
+        return next({ status: 400, message: 'invalid file name' });
+      }
+      const updated = await prisma.file.update({
+        where: { id: req.params.id },
+        data: { name: req.body.name },
+      });
+      res.redirect(`/file/${req.params.id}`);
+    }),
+  ],
 
   getFolder: asyncHandler(async (req, res, next) => {
     const folder = await prisma.folder.findUnique({
@@ -132,7 +154,7 @@ module.exports = {
     res.redirect(redirect);
   }),
 
-  postRenameFolder: [
+  postUpdateFolder: [
     validateFolderName,
     asyncHandler(async (req, res, next) => {
       const folder = await prisma.folder.update({

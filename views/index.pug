@@ -6,19 +6,19 @@ block content
   p Welcome to #{title}
   p user :tu password :tp
   if currentUser
+    if folderid
+      form(action=`/file/folder/${folderid}/update` method='post')
+        label(for='rename') Rename&nbsp;
+        input(type='text' name='name' id='rename')
+        span &nbsp;
+        button(type='submit') Update
+      form(action=`/file/folder/${folderid}/delete` method='post')
+        button(type='submit') Delete
     form(action=`/file/folder/${folderid}` method='post')
       label(for='name') New folder&nbsp;
       input(type='text' name='name' id='name')
       span &nbsp;
       button(type='submit') Create
-    if folderid
-      form(action=`/file/folder/${folderid}/rename` method='post')
-        label(for='rename') Rename&nbsp;
-        input(type='text' name='rename' id='rename')
-        span &nbsp;
-        button(type='submit') Rename
-      form(action=`/file/folder/${folderid}/delete` method='post')
-        button(type='submit') Delete
     form(action=`/file/upload/${folderid}` method='post' enctype='multipart/form-data')
       input(type='file' name='upload')
       button(type='submit') Upload
@@ -30,7 +30,7 @@ block content
       if files
           for file in files
             li
-              a(href=`/file/${file.id}`)= file.originalName
+              a(href=`/file/${file.id}`)= file.name
               // to fix
       if !folders && !files
         p There is no folder or file

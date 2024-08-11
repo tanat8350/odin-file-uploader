@@ -30,6 +30,7 @@ model Session {
 
 model File {
   id String @id
+  name String
   originalName String
   size Int
   uploadTime DateTime @default(now())

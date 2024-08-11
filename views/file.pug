@@ -2,10 +2,14 @@ extends layout
 
 block content
   h1= title
-  p Filename: #{file.originalName}
+  p Filename: #{file.name}
   p Size: #{file.size}
   p Upload time: #{file.uploadTime}
-  form(action=`/file/download/${file.id}` method='post')
+  form(action=`/file/${file.id}/update` method='post')
+    label(for='rename') Rename&nbsp;
+    input(type='text' id='rename' name='name')
+    button(type='submit') Update
+  form(action=`/file/${file.id}/download` method='post')
     button(type='submit') Download
-  form(action=`/file/delete/${file.id}` method='post')
+  form(action=`/file/${file.id}/delete` method='post')
     button(type='submit') Delete
