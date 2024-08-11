@@ -16,16 +16,21 @@ module.exports = {
   postUpload: [
     upload.single('upload'),
     asyncHandler(async (req, res) => {
+      let redirect = '/';
+      const file = {
+        id: req.file.filename,
+        originalName: req.file.originalname,
+        size: req.file.size,
+        userid: res.locals.currentUser.id,
+      };
+      if (req.params.id) {
+        file.folderid = +req.params.id;
+        redirect = `/file/folder/${req.params.id}`;
+      }
       const created = await prisma.file.create({
-        data: {
-          id: req.file.filename,
-          originalName: req.file.originalname,
-          size: req.file.size,
-          userid: res.locals.currentUser.id,
-        },
+        data: file,
       });
-      console.log(created);
-      res.redirect('/');
+      res.redirect(redirect);
     }),
   ],
 
@@ -54,13 +59,13 @@ module.exports = {
   getInFolder: asyncHandler(async (req, res, next) => {
     const folder = await prisma.folder.findUnique({
       where: { id: +req.params.id },
-      include: { childrenFolders: true },
+      include: { childrenFolders: true, files: true },
     });
-    console.log(folder);
     res.locals.folderid = +req.params.id;
     res.render('index', {
       title: folder.name,
       folders: folder.childrenFolders,
+      files: folder.files,
     });
   }),
 };

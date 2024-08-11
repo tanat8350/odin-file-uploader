@@ -5,7 +5,7 @@ const fileController = require('../controllers/fileController');
 
 router.get('/:id', fileController.getFile);
 router.post('/upload/', fileController.postUpload);
-router.post('/upload/:folderid', fileController.postUpload);
+router.post('/upload/:id', fileController.postUpload);
 router.post('/folder/', fileController.postCreateFolderRoot);
 router.get('/folder/:id', fileController.getInFolder);
 router.post('/folder/:id', fileController.postCreateFolderRoot);
