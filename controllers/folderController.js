@@ -4,7 +4,7 @@ const { body, validationResult } = require('express-validator');
 
 const prisma = require('../config/prisma');
 
-const validateFolderName = [
+const validateFolder = [
   body('name')
     .trim()
     .isLength({ min: 1 })
@@ -22,7 +22,7 @@ module.exports = {
     const title = 'Odin File uploader';
 
     if (!res.locals.currentUser) {
-      res.render('index', { title });
+      res.render('folder', { title });
       return;
     }
 
@@ -35,7 +35,7 @@ module.exports = {
       }),
     ]);
     res.locals.folderid = '';
-    res.render('index', { title, folders, files });
+    res.render('folder', { title, folders, files });
   }),
 
   getFolder: asyncHandler(async (req, res, next) => {
@@ -45,7 +45,7 @@ module.exports = {
     });
     res.locals.folderid = +req.params.id;
     console.log(folder);
-    res.render('index', {
+    res.render('folder', {
       title: folder.name,
       folders: folder.childrenFolders,
       files: folder.files,
@@ -53,7 +53,7 @@ module.exports = {
   }),
 
   postCreateFolder: [
-    validateFolderName,
+    validateFolder,
     asyncHandler(async (req, res, next) => {
       const errors = validationResult(req);
       // later add display error msg
@@ -108,13 +108,20 @@ module.exports = {
   }),
 
   postUpdateFolder: [
-    validateFolderName,
+    validateFolder,
     asyncHandler(async (req, res, next) => {
-      const folder = await prisma.folder.update({
+      const folder = {};
+      req.body.rename ? (folder.name = req.body.rename) : null;
+      if (req.body.move) {
+        req.body.move == '0'
+          ? (folder.parentFolderId = null)
+          : (folder.parentFolderId = +req.body.move);
+      }
+      const updated = await prisma.folder.update({
         where: { id: +req.params.id },
-        data: { name: req.body.rename },
+        data: folder,
       });
-      if (!folder) {
+      if (!updated) {
         return next({ status: 404, message: 'Fail to rename folder' });
       }
       res.redirect(`/folder/${req.params.id}`);

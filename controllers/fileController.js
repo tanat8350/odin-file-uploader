@@ -6,7 +6,7 @@ const upload = require('../config/upload');
 const prisma = require('../config/prisma');
 
 const validateFile = [
-  body('name')
+  body('rename')
     .trim()
     .isLength({ min: 1 })
     .withMessage('Name is required')
@@ -81,7 +81,7 @@ module.exports = {
         return next({ status: 400, message: 'invalid input' });
       }
       const file = {};
-      req.body.name ? (file.name = req.body.name) : null;
+      req.body.rename ? (file.name = req.body.rename) : null;
       if (req.body.move) {
         req.body.move == '0'
           ? (file.folderid = null)

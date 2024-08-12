@@ -8,11 +8,11 @@ block content
   p Upload time: #{file.uploadTime}
   form(action=`/file/${file.id}/update` method='post')
     div
-      label(for='move') Move file to folder id&nbsp;
+      label(for='move') Move to folder id&nbsp;
       input(type='text' id='move' name='move')
     div
       label(for='rename') Rename&nbsp;
-      input(type='text' id='rename' name='name')
+      input(type='text' id='rename' name='rename')
     button(type='submit') Update
   form(action=`/file/${file.id}/download` method='post')
     button(type='submit') Download

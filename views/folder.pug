@@ -8,9 +8,12 @@ block content
     if folderid
       p Folder id: #{folderid}
       form(action=`/folder/${folderid}/update` method='post')
-        label(for='rename') Rename&nbsp;
-        input(type='text' name='name' id='rename')
-        span &nbsp;
+        div
+          label(for='move') Move to folder id&nbsp;
+          input(type='text' name='move' id='move')
+        div
+          label(for='rename') Rename&nbsp;
+          input(type='text' name='name' id='rename')
         button(type='submit') Update
       form(action=`/folder/${folderid}/delete` method='post')
         button(type='submit') Delete
