@@ -7,14 +7,14 @@ block content
   p user :tu password :tp
   if currentUser
     if folderid
-      form(action=`/file/folder/${folderid}/update` method='post')
+      form(action=`/folder/${folderid}/update` method='post')
         label(for='rename') Rename&nbsp;
         input(type='text' name='name' id='rename')
         span &nbsp;
         button(type='submit') Update
-      form(action=`/file/folder/${folderid}/delete` method='post')
+      form(action=`/folder/${folderid}/delete` method='post')
         button(type='submit') Delete
-    form(action=`/file/folder/${folderid}` method='post')
+    form(action=`/folder/${folderid}` method='post')
       label(for='name') New folder&nbsp;
       input(type='text' name='name' id='name')
       span &nbsp;
@@ -26,7 +26,7 @@ block content
       if folders
         for folder in folders
           li
-            a(href=`/file/folder/${folder.id}`)= folder.name + '/'
+            a(href=`/folder/${folder.id}`)= folder.name + '/'
       if files
           for file in files
             li

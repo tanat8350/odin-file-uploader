@@ -37,7 +37,7 @@ model File {
   userid Int
   user User @relation(fields: [userid], references: [id])
   folderid Int?
-  folder Folder? @relation(fields: [folderid], references: [id])
+  folder Folder? @relation(fields: [folderid], references: [id], onDelete: Cascade)
 }
 
 model Folder {
@@ -46,7 +46,7 @@ model Folder {
   userid Int
   user User @relation(fields: [userid], references: [id])
   parentFolderId Int?
-  parentFolder Folder? @relation("FolderRelation",fields: [parentFolderId], references: [id])
+  parentFolder Folder? @relation("FolderRelation",fields: [parentFolderId], references: [id], onDelete: Cascade)
   childrenFolders Folder[] @relation("FolderRelation")
   files File[]
 }

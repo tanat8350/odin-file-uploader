@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const indexController = require('../controllers/indexController');
+const folderController = require('../controllers/folderController');
 
 /* GET home page. */
-router.get('/', indexController.index);
+router.get('/', folderController.getRedirectRootFolder);
 
 module.exports = router;
