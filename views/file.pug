@@ -3,11 +3,16 @@ extends layout
 block content
   h1= title
   p Filename: #{file.name}
+  p Folder id: #{file.folderid || 0}
   p Size: #{file.size}
   p Upload time: #{file.uploadTime}
   form(action=`/file/${file.id}/update` method='post')
-    label(for='rename') Rename&nbsp;
-    input(type='text' id='rename' name='name')
+    div
+      label(for='move') Move file to folder id&nbsp;
+      input(type='text' id='move' name='move')
+    div
+      label(for='rename') Rename&nbsp;
+      input(type='text' id='rename' name='name')
     button(type='submit') Update
   form(action=`/file/${file.id}/download` method='post')
     button(type='submit') Download

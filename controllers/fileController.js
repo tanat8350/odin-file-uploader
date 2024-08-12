@@ -5,18 +5,18 @@ const { body, validationResult } = require('express-validator');
 const upload = require('../config/upload');
 const prisma = require('../config/prisma');
 
-const validateFileName = [
-  body('name').trim().isLength({ min: 1 }).withMessage('Name is required'),
-  // later add file format
-];
-
-const validateFolderName = [
+const validateFile = [
   body('name')
     .trim()
     .isLength({ min: 1 })
     .withMessage('Name is required')
-    .isAlphanumeric()
-    .withMessage('Name must be alphanumeric'),
+    .optional({ values: 'falsy' }),
+  // later add file format
+  body('move')
+    .trim()
+    .isNumeric()
+    .withMessage('Move needs to be number')
+    .optional({ values: 'falsy' }),
 ];
 
 module.exports = {
@@ -46,6 +46,9 @@ module.exports = {
       const created = await prisma.file.create({
         data: file,
       });
+      if (!created) {
+        return next({ status: 404, message: 'Fail to create file' });
+      }
       res.redirect(redirect);
     }),
   ],
@@ -70,101 +73,28 @@ module.exports = {
   }),
 
   postUpdateFile: [
-    validateFileName,
+    validateFile,
     asyncHandler(async (req, res, next) => {
       const errors = validationResult(req);
       // later add display error msg
       if (!errors.isEmpty()) {
-        return next({ status: 400, message: 'invalid file name' });
+        return next({ status: 400, message: 'invalid input' });
+      }
+      const file = {};
+      req.body.name ? (file.name = req.body.name) : null;
+      if (req.body.move) {
+        req.body.move == '0'
+          ? (file.folderid = null)
+          : (file.folderid = +req.body.move);
       }
       const updated = await prisma.file.update({
         where: { id: req.params.id },
-        data: { name: req.body.name },
+        data: file,
       });
+      if (!updated) {
+        return next({ status: 404, message: 'Fail to update file' });
+      }
       res.redirect(`/file/${req.params.id}`);
-    }),
-  ],
-
-  getFolder: asyncHandler(async (req, res, next) => {
-    const folder = await prisma.folder.findUnique({
-      where: { id: +req.params.id },
-      include: { childrenFolders: true, files: true },
-    });
-    res.locals.folderid = +req.params.id;
-    console.log(folder);
-    res.render('index', {
-      title: folder.name,
-      folders: folder.childrenFolders,
-      files: folder.files,
-    });
-  }),
-
-  postCreateFolder: [
-    validateFolderName,
-    asyncHandler(async (req, res, next) => {
-      const errors = validationResult(req);
-      // later add display error msg
-      if (!errors.isEmpty()) {
-        return next({ status: 400, message: 'invalid folder name' });
-      }
-
-      const folder = {
-        name: req.body.name,
-        userid: +res.locals.currentUser.id,
-      };
-
-      if (req.params.id) {
-        folder.parentFolderId = +req.params.id;
-      }
-      const created = await prisma.folder.create({
-        data: folder,
-      });
-      if (!created) {
-        return next({ status: 404, message: 'Fail to create folder' });
-      }
-      res.redirect(created.id);
-    }),
-  ],
-
-  postDeleteFolder: asyncHandler(async (req, res, next) => {
-    // fix later change to folder 0 structure
-    const deleteFolder = prisma.folder.delete({
-      where: { id: +req.params.id },
-    });
-    const deleteChildrenFolders = prisma.folder.deleteMany({
-      where: { parentFolderId: +req.params.id },
-    });
-    const deleteFiles = prisma.file.deleteMany({
-      where: { folderid: +req.params.id },
-    });
-    const transaction = await prisma.$transaction([
-      deleteChildrenFolders,
-      deleteFiles,
-      deleteFolder,
-    ]);
-    if (!transaction) {
-      return next({ status: 404, message: 'Fail to delete folder' });
-    }
-
-    let redirect = '/';
-    const last = transaction.length - 1;
-    if (transaction[last].parentFolderId) {
-      redirect = `/folder/${transaction[last].parentFolderId}`;
-    }
-    res.redirect(redirect);
-  }),
-
-  postUpdateFolder: [
-    validateFolderName,
-    asyncHandler(async (req, res, next) => {
-      const folder = await prisma.folder.update({
-        where: { id: +req.params.id },
-        data: { name: req.body.rename },
-      });
-      if (!folder) {
-        return next({ status: 404, message: 'Fail to rename folder' });
-      }
-      res.redirect(`/folder/${req.params.id}`);
     }),
   ],
 };

@@ -3,10 +3,10 @@ extends layout
 block content
   // Folder view
   h1= title
-  p Welcome to #{title}
   p user :tu password :tp
   if currentUser
     if folderid
+      p Folder id: #{folderid}
       form(action=`/folder/${folderid}/update` method='post')
         label(for='rename') Rename&nbsp;
         input(type='text' name='name' id='rename')
@@ -14,6 +14,8 @@ block content
         button(type='submit') Update
       form(action=`/folder/${folderid}/delete` method='post')
         button(type='submit') Delete
+    else
+      p Folder id: 0
     form(action=`/folder/${folderid}` method='post')
       label(for='name') New folder&nbsp;
       input(type='text' name='name' id='name')
