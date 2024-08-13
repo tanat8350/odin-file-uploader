@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1= title
+  p Filename: #{file.name}
+  p Size: #{file.size}
+  p Expire at: #{file.share}
+  form(action=`/share/${file.id}` method='post')
+    button(type='submit') Download

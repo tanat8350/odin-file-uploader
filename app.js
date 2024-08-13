@@ -13,6 +13,7 @@ const usersRouter = require('./routes/users');
 const authenticateRouter = require('./routes/authenticate');
 const fileRouter = require('./routes/file');
 const folderRouter = require('./routes/folder');
+const shareRouter = require('./routes/share');
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use('/', authenticateRouter);
 app.use('/file', fileRouter);
 app.use('/folder', folderRouter);
 app.use('/users', usersRouter);
+app.use('/share', shareRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

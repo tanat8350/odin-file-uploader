@@ -5,6 +5,8 @@ const { body, validationResult } = require('express-validator');
 const upload = require('../config/upload');
 const prisma = require('../config/prisma');
 
+const CustomDate = require('../helpers/CustomDate');
+
 const validateFile = [
   body('rename')
     .trim()
@@ -17,6 +19,11 @@ const validateFile = [
     .isNumeric()
     .withMessage('Move needs to be number')
     .optional({ values: 'falsy' }),
+  body('share')
+    .trim()
+    .isNumeric()
+    .withMessage('Share needs to be number')
+    .optional({ values: 'falsy' }),
 ];
 
 module.exports = {
@@ -25,6 +32,10 @@ module.exports = {
       where: { id: req.params.id },
     });
     file.uploadTime = new Date(file.uploadTime).toLocaleString();
+    file.share =
+      file.share && file.share > new Date()
+        ? new Date(file.share).toLocaleString()
+        : null;
     res.render('file', { title: file.name, file });
   }),
 
@@ -53,9 +64,18 @@ module.exports = {
     }),
   ],
 
-  postDownloadFile: (req, res) => {
-    res.download(path.join(__dirname, '../uploads/' + req.params.id));
-  },
+  postDownloadFile: asyncHandler(async (req, res) => {
+    const file = await prisma.file.findUnique({
+      where: { id: req.params.id },
+    });
+    if (!file) {
+      return next({ status: 404, message: 'File not found' });
+    }
+    res.download(
+      path.join(__dirname, '../uploads/' + req.params.id),
+      file.name
+    );
+  }),
 
   postDeleteFile: asyncHandler(async (req, res, next) => {
     const deleted = await prisma.file.delete({
@@ -75,6 +95,13 @@ module.exports = {
   postUpdateFile: [
     validateFile,
     asyncHandler(async (req, res, next) => {
+      // to remove
+      // const share = req.body.share;
+      // const expired = new DateE();
+      // expired.addDays(share);
+      // console.log(expired);
+      // res.redirect(`/file/${req.params.id}`);
+      // return;
       const errors = validationResult(req);
       // later add display error msg
       if (!errors.isEmpty()) {
@@ -86,6 +113,9 @@ module.exports = {
         req.body.move == '0'
           ? (file.folderid = null)
           : (file.folderid = +req.body.move);
+      }
+      if (req.body.share) {
+        file.share = new CustomDate().addDays(+req.body.share);
       }
       const updated = await prisma.file.update({
         where: { id: req.params.id },
