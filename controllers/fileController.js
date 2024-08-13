@@ -95,15 +95,7 @@ module.exports = {
   postUpdateFile: [
     validateFile,
     asyncHandler(async (req, res, next) => {
-      // to remove
-      // const share = req.body.share;
-      // const expired = new DateE();
-      // expired.addDays(share);
-      // console.log(expired);
-      // res.redirect(`/file/${req.params.id}`);
-      // return;
       const errors = validationResult(req);
-      // later add display error msg
       if (!errors.isEmpty()) {
         return next({ status: 400, message: 'invalid input' });
       }

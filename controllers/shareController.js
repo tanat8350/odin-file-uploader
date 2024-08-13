@@ -27,7 +27,6 @@ module.exports = {
     if (!file) {
       return next({ status: 404, message: 'Invalid link' });
     }
-    console.log(file);
     res.download(
       path.join(__dirname, '../uploads/' + req.params.id),
       file.name

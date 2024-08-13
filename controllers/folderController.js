@@ -40,7 +40,6 @@ module.exports = {
       include: { childrenFolders: true, files: true },
     });
     res.locals.folderid = +req.params.id;
-    console.log(folder);
     res.render('folder', {
       title: folder.name,
       folders: folder.childrenFolders,
