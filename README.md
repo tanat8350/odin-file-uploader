@@ -4,4 +4,4 @@
 
 # to do
 
-delete file with fs
+dom error body validation msg

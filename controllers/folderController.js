@@ -1,6 +1,7 @@
 const path = require('path');
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require('express-validator');
+const { unlink } = require('fs');
 
 const prisma = require('../config/prisma');
 
@@ -12,6 +13,20 @@ const validateFolder = [
     .isAlphanumeric()
     .withMessage('Name must be alphanumeric'),
 ];
+
+const findFilesToDelete = async (id, files = []) => {
+  const folder = await prisma.folder.findUnique({
+    where: { id: id },
+    include: { childrenFolders: true, files: true },
+  });
+  for (const item of folder.files) {
+    files.push(item.id);
+  }
+  for (const item of folder.childrenFolders) {
+    await findFilesToDelete(item.id, files);
+  }
+  return files;
+};
 
 module.exports = {
   getRoot: asyncHandler(async (req, res) => {
@@ -39,6 +54,7 @@ module.exports = {
       where: { id: +req.params.id },
       include: { childrenFolders: true, files: true },
     });
+
     res.locals.folderid = +req.params.id;
     res.render('folder', {
       title: folder.name,
@@ -51,7 +67,6 @@ module.exports = {
     validateFolder,
     asyncHandler(async (req, res, next) => {
       const errors = validationResult(req);
-      // later add display error msg
       if (!errors.isEmpty()) {
         return next({ status: 400, message: 'invalid folder name' });
       }
@@ -75,29 +90,14 @@ module.exports = {
   ],
 
   postDeleteFolder: asyncHandler(async (req, res, next) => {
-    // fix later change to folder 0 structure
-    const deleteFolder = prisma.folder.delete({
-      where: { id: +req.params.id },
+    const filesToDelete = await findFilesToDelete(+req.params.id);
+    filesToDelete.forEach((file) => {
+      unlink(path.join('uploads/' + file), () => {});
     });
-    const deleteChildrenFolders = prisma.folder.deleteMany({
-      where: { parentFolderId: +req.params.id },
-    });
-    const deleteFiles = prisma.file.deleteMany({
-      where: { folderid: +req.params.id },
-    });
-    const transaction = await prisma.$transaction([
-      deleteChildrenFolders,
-      deleteFiles,
-      deleteFolder,
-    ]);
-    if (!transaction) {
-      return next({ status: 404, message: 'Fail to delete folder' });
-    }
 
     let redirect = '/';
-    const last = transaction.length - 1;
-    if (transaction[last].parentFolderId) {
-      redirect = `/folder/${transaction[last].parentFolderId}`;
+    if (deleteFolder.parentFolderId) {
+      redirect = `/folder/${deleteFolder.parentFolderId}`;
     }
     res.redirect(redirect);
   }),
