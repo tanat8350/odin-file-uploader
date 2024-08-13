@@ -12,8 +12,9 @@ const validateFile = [
     .trim()
     .isLength({ min: 1 })
     .withMessage('Name is required')
+    .matches(/^[a-zA-Z0-9 ._-]+$/)
+    .withMessage('Only alphanumeric, period, underscores, and hyphens allowed')
     .optional({ values: 'falsy' }),
-  // later add file format
   body('move')
     .trim()
     .isNumeric()
