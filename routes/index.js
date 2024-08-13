@@ -3,7 +3,7 @@ const router = express.Router();
 
 const folderController = require('../controllers/folderController');
 
-/* GET home page. */
-router.get('/', folderController.getRedirectRootFolder);
+// workaround for checkLoggedin
+router.get('/', folderController.getRoot);
 
 module.exports = router;

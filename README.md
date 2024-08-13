@@ -4,4 +4,4 @@
 
 # to do
 
-add upload file into folder
+delete file with fs

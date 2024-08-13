@@ -9,7 +9,6 @@ const passport = require('passport');
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const authenticateRouter = require('./routes/authenticate');
 const fileRouter = require('./routes/file');
 const folderRouter = require('./routes/folder');
@@ -45,11 +44,13 @@ app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   next();
 });
+
+const checkLoggedin = require('./middlewares/checkLoggedin');
+
 app.use('/', indexRouter);
 app.use('/', authenticateRouter);
-app.use('/file', fileRouter);
-app.use('/folder', folderRouter);
-app.use('/users', usersRouter);
+app.use('/file', checkLoggedin, fileRouter);
+app.use('/folder', checkLoggedin, folderRouter);
 app.use('/share', shareRouter);
 
 // catch 404 and forward to error handler

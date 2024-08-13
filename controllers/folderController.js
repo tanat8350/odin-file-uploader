@@ -14,10 +14,6 @@ const validateFolder = [
 ];
 
 module.exports = {
-  getRedirectRootFolder: (req, res) => {
-    res.redirect('/folder/');
-  },
-
   getRoot: asyncHandler(async (req, res) => {
     const title = 'Odin File uploader';
 
